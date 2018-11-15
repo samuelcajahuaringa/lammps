@@ -58,7 +58,8 @@ keyword = {temp} or {iso} or {aniso} or {tri} or {x} or {y} or {z} or {xy} or {y
     x,y,z = perform barostat dilation/contraction around this point (distance units)
   {update} value = {dipole} or {dipole/dlm}
     dipole = update dipole orientation (only for sphere variants)
-    dipole/dlm = use DLM integrator to update dipole orientation (only for sphere variants) :pre
+    dipole/dlm = use DLM integrator to update dipole orientation (only for sphere variants)
+  {logistic} = {logistic} apply the Logistic thermostat instead the Nose-Hoover thermostat :pre
 :ule
 
 [Examples:]
@@ -606,6 +607,21 @@ can only be used if the 2nd dimension in the keyword is periodic,
 and if the tilt factor is not coupled to the barostat via keywords
 {tri}, {yz}, {xz}, and {xy}.
 
+The {logistic} keyword apply the Logistic thermostat proposed for Tapias et al
+in "(Tapias)"_#log-Tapias instead the Nose-Hoover thermostat, but using the 
+same scheme integration for the equations motion. In addition is only necessary 
+one dynamical variable copuled to the particles velocities and/or one 
+dynamical variables coupled to the barostat velocities. In this case the keywords 
+defaults are tchain = 1, pchain = 1, mtk = yes, tloop = plopp = 1 and drag = 0.0. 
+
+The notation of the dynamical variables is the same of the Nose-Hoover dynamics 
+but the meaning of the thermostat velocities change:
+
+eta_dot\[1\] = particle thermostat velocities (unitless)
+etap_dot\[1\] = barostat thermostat velocities (unitless)
+KE_eta_dot\[1\] = distribution energy of particle thermostat velocity (energy units)
+KE_etap_dot\[1\] = distribution energy of barostat thermostat velocity (energy units) :ul
+
 These fixes can be used with dynamic groups as defined by the
 "group"_group.html command.  Likewise they can be used with groups to
 which atoms are added or deleted over time, e.g. a deposition
@@ -644,3 +660,7 @@ Martyna, J Phys A: Math Gen, 39, 5629 (2006).
 :link(nh-Dullweber)
 [(Dullweber)] Dullweber, Leimkuhler and McLachlan, J Chem Phys, 107,
 5840 (1997).
+
+:link(log-Tapias)
+[(Tapias)] Tapias, Sanders, and Bravetti, J Chem Phys, 145, 084113 
+(2016).
