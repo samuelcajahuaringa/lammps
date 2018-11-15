@@ -35,9 +35,11 @@
 #include "domain.h"
 #include "memory.h"
 #include "error.h"
+#include "math_const.h"
 
 using namespace LAMMPS_NS;
 using namespace FixConst;
+using namespace MathConst;
 
 #define DELTAFLIP 0.1
 #define TILTMAX 1.5
@@ -814,7 +816,7 @@ void FixNH::setup(int vflag)
 
   if (tstat_flag) {
     if (logistic_flag) {
-      eta_mass[0] = tdof * boltz * t_target / t_freq;
+      eta_mass[0] = 0.25* sqrt(MY_2PI*tdof) * boltz * t_target / t_freq;
     } else {
       eta_mass[0] = tdof * boltz * t_target / (t_freq*t_freq);
       for (int ich = 1; ich < mtchain; ich++)
@@ -845,7 +847,7 @@ void FixNH::setup(int vflag)
 
     if (mpchain) {
       if (logistic_flag) {
-        etap_mass[0] = boltz * t_target / p_freq_max;
+        etap_mass[0] = 0.25 * sqrt(MY_2PI) *  boltz * t_target / p_freq_max;
       } else {
         etap_mass[0] = boltz * t_target / (p_freq_max*p_freq_max);
         for (int ich = 1; ich < mpchain; ich++)
@@ -2481,7 +2483,7 @@ void FixNH::logistic_temp_integrate()
   double logistic_scaling;
   // Update masses, to preserve initial freq, if flag set
 
-  eta_mass[0] = tdof * boltz * t_target / t_freq;
+  eta_mass[0] = 0.25 * sqrt(MY_2PI*tdof) * boltz * t_target / t_freq;
 
   if (eta_mass[0] > 0.0)
     eta_dotdot[0] = (kecurrent - ke_target)/eta_mass[0];
@@ -2489,7 +2491,7 @@ void FixNH::logistic_temp_integrate()
 
   eta_dot[0] += eta_dotdot[0] * dt4;
 
-  logistic_scaling = dthalf*kt*tanh(0.5*eta_dot[0]);
+  logistic_scaling = dthalf*kt*tanh(0.5*eta_dot[0])/eta_mass[0];
 
   eta[0] += logistic_scaling;
 
@@ -2537,7 +2539,7 @@ void FixNH::logistic_press_integrate()
   }
 
   if (etap_mass_flag) {
-    etap_mass[0] = boltz * t_target / p_freq_max;
+    etap_mass[0] = 0.25 * sqrt(MY_2PI) *boltz * t_target / p_freq_max;
   }
 
   kecurrent = 0.0;
@@ -2553,7 +2555,7 @@ void FixNH::logistic_press_integrate()
 
   etap_dot[0] += etap_dotdot[0] * dt4;
 
-  logistic_scaling = dthalf*kt*tanh(0.5*etap_dot[0]);
+  logistic_scaling = dthalf*kt*tanh(0.5*etap_dot[0])/etap_mass[0];
 
   etap[0] += logistic_scaling;
 
